@@ -58,7 +58,6 @@ class Dot
 		void move( Tile *tiles[] );
 		void setCamera( SDL_Rect& camera );
 		void render( SDL_Rect& camera );
-		std::pair<int, int> getClickedCell(int mouseX, int mouseY);
 		void moveToCell(std::pair<int,int> coords);
 
     private:
@@ -66,7 +65,6 @@ class Dot
 		SDL_Rect mCamera;
 		int mVelX, mVelY;
 };
-
 
 //Dimension du .map
 const int MAP_TILE_WIDTH = 16;
@@ -102,6 +100,6 @@ void close( Tile* tiles[] );
 bool touchesWall( SDL_Rect box, Tile* tiles[] );
 bool setTiles( Tile *tiles[], const char* mapFile );
 bool loadMedia( Tile* tiles[], const char* tileSetFile, const char* mapFile );
-void mainLoop(Tile* tileSet[]);
+std::pair<int,int> getClickedCell(SDL_Rect& camera, int mouseX, int mouseY);
 
 #endif // SDL_SETUP_H_INCLUDED

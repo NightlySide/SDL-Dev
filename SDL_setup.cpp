@@ -154,17 +154,8 @@ void Dot::handleEvent( SDL_Event& e )
     }
     else if(e.type == SDL_MOUSEBUTTONDOWN)
     {
-        moveToCell(getClickedCell(e.button.x, e.button.y));
+        moveToCell(getClickedCell(mCamera, e.button.x, e.button.y));
     }
-}
-
-std::pair<int,int> Dot::getClickedCell(int mouseX, int mouseY)
-{
-    int cellX = (mCamera.x+mouseX)/TILE_WIDTH;
-    int cellY = (mCamera.y+mouseY)/TILE_HEIGHT;
-
-    printf("CellX: %d | CellY: %d\n", cellX, cellY);
-    return std::make_pair(cellX, cellY);
 }
 
 void Dot::move( Tile *tiles[] )
@@ -394,7 +385,7 @@ bool setTiles( Tile* tiles[] , const char* mapFile)
                 for(int column = 0; column<TILESET_COLUMNS; column++)
                 {
                     int tileId = line*TILESET_COLUMNS+column;
-                    printf("Column %d | Line %d | Id %d\n", column, line, tileId);
+                    //printf("Column %d | Line %d | Id %d\n", column, line, tileId);
                     gTileClips[tileId].x = TILE_WIDTH*column;
                     gTileClips[tileId].y = TILE_HEIGHT*line;
                     gTileClips[tileId].w = TILE_WIDTH;
@@ -422,56 +413,11 @@ bool touchesWall( SDL_Rect box, Tile* tiles[] )
     return false;
 }
 
-void mainLoop(Tile* tileSet[])
+std::pair<int,int> getClickedCell(SDL_Rect& camera, int mouseX, int mouseY)
 {
-    //Main loop flag
-    bool quit = false;
+    int cellX = (camera.x+mouseX)/TILE_WIDTH;
+    int cellY = (camera.y+mouseY)/TILE_HEIGHT;
 
-    //Event handler
-    SDL_Event e;
-
-    //Level camera
-    SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-
-    //The dot that will be moving around on the screen
-    Dot dot = Dot(camera);
-
-    //While application is running
-    while( !quit )
-    {
-        //Handle events on queue
-        while( SDL_PollEvent( &e ) != 0 )
-        {
-            //User requests quit
-            if( e.type == SDL_QUIT )
-            {
-                quit = true;
-            }
-
-            //Handle input for the dot
-            dot.handleEvent( e );
-        }
-
-        //Move the dot
-        dot.move( tileSet );
-        dot.setCamera( camera );
-
-        //Clear screen
-        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-        SDL_RenderClear( gRenderer );
-
-        //Render level
-        for( int i = 0; i < TOTAL_TILES; ++i )
-        {
-            tileSet[ i ]->render( camera );
-        }
-
-        //Render dot
-        dot.render( camera );
-
-        //Update screen
-        SDL_RenderPresent( gRenderer );
-        //To have 50FPS
-        SDL_Delay( 1000 / 50 );
-    }
+    printf("CellX: %d | CellY: %d\n", cellX, cellY);
+    return std::make_pair(cellX, cellY);
 }
