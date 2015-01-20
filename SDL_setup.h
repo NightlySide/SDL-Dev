@@ -53,14 +53,17 @@ class Dot
     public:
 		static const int DOT_WIDTH = 20;
 		static const int DOT_HEIGHT = 20;
-		Dot();
+		Dot(SDL_Rect camera);
 		void handleEvent( SDL_Event& e );
 		void move( Tile *tiles[] );
 		void setCamera( SDL_Rect& camera );
 		void render( SDL_Rect& camera );
+		std::pair<int, int> getClickedCell(int mouseX, int mouseY);
+		void moveToCell(std::pair<int,int> coords);
 
     private:
 		SDL_Rect mBox;
+		SDL_Rect mCamera;
 		int mVelX, mVelY;
 };
 
@@ -86,20 +89,6 @@ const int SCREEN_HEIGHT = 8*TILE_HEIGHT;
 //Col et lignes du tileset
 const int TILESET_LINES = 2;
 const int TILESET_COLUMNS = 3;
-
-//The different tile sprites
-//const int TILE_RED = 0;
-//const int TILE_GREEN = 1;
-//const int TILE_BLUE = 2;
-//const int TILE_CENTER = 3;
-//const int TILE_TOP = 4;
-//const int TILE_TOPRIGHT = 5;
-//const int TILE_RIGHT = 6;
-//const int TILE_BOTTOMRIGHT = 7;
-//const int TILE_BOTTOM = 8;
-//const int TILE_BOTTOMLEFT = 9;
-//const int TILE_LEFT = 10;
-//const int TILE_TOPLEFT = 11;
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;

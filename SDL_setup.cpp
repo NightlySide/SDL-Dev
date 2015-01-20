@@ -117,12 +117,14 @@ SDL_Rect Tile::getBox()
     return mBox;
 }
 
-Dot::Dot()
+Dot::Dot(SDL_Rect camera)
 {
     mBox.x = TILE_WIDTH/2-DOT_WIDTH/2;
     mBox.y = TILE_HEIGHT/2-DOT_HEIGHT/2;
 	mBox.w = DOT_WIDTH;
 	mBox.h = DOT_HEIGHT;
+
+    mCamera = camera;
 
     mVelX = 0;
     mVelY = 0;
@@ -150,6 +152,19 @@ void Dot::handleEvent( SDL_Event& e )
             case SDLK_RIGHT: mVelX -= TILE_WIDTH; break;
         }
     }
+    else if(e.type == SDL_MOUSEBUTTONDOWN)
+    {
+        moveToCell(getClickedCell(e.button.x, e.button.y));
+    }
+}
+
+std::pair<int,int> Dot::getClickedCell(int mouseX, int mouseY)
+{
+    int cellX = (mCamera.x+mouseX)/TILE_WIDTH;
+    int cellY = (mCamera.y+mouseY)/TILE_HEIGHT;
+
+    printf("CellX: %d | CellY: %d\n", cellX, cellY);
+    return std::make_pair(cellX, cellY);
 }
 
 void Dot::move( Tile *tiles[] )
@@ -165,6 +180,12 @@ void Dot::move( Tile *tiles[] )
         mBox.y -= mVelY;
     }
     SDL_Delay( 1000 / 50 );
+}
+
+void Dot::moveToCell(std::pair<int,int> coords)
+{
+    mBox.x = coords.first*TILE_WIDTH+(TILE_WIDTH/2-DOT_WIDTH/2);
+    mBox.y = coords.second*TILE_HEIGHT+(TILE_HEIGHT/2-DOT_HEIGHT/2);
 }
 
 void Dot::setCamera( SDL_Rect& camera )
@@ -188,6 +209,7 @@ void Dot::setCamera( SDL_Rect& camera )
 	{
 		camera.y = LEVEL_HEIGHT - camera.h;
 	}
+	mCamera = camera;
 }
 
 void Dot::render( SDL_Rect& camera )
@@ -408,11 +430,11 @@ void mainLoop(Tile* tileSet[])
     //Event handler
     SDL_Event e;
 
-    //The dot that will be moving around on the screen
-    Dot dot;
-
     //Level camera
     SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
+    //The dot that will be moving around on the screen
+    Dot dot = Dot(camera);
 
     //While application is running
     while( !quit )
