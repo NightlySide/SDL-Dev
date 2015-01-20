@@ -1,0 +1,27 @@
+# depslib dependency file v1.0
+1421523134 source:c:\users\alexandre\documents\github\sdl - copy\39_tiling.cpp
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	<stdio.h>
+	<string>
+	<fstream>
+
+1421773770 source:c:\users\alexandre\documents\github\sdl - working\39_tiling.cpp
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	<stdio.h>
+	<string>
+	<fstream>
+	"SDL_setup.h"
+
+1421774259 c:\users\alexandre\documents\github\sdl - working\sdl_setup.h
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	<stdio.h>
+	<string>
+	<fstream>
+
+1421774199 source:c:\users\alexandre\documents\github\sdl - working\sdl_setup.cpp
+	"SDL_setup.h"
+	<stdio.h>
+
