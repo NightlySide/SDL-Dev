@@ -152,21 +152,17 @@ void Dot::handleEvent( SDL_Event& e )
             case SDLK_RIGHT: mVelX -= TILE_WIDTH; break;
         }
     }
-    else if(e.type == SDL_MOUSEBUTTONDOWN)
-    {
-        moveToCell(getClickedCell(mCamera, e.button.x, e.button.y));
-    }
 }
 
-void Dot::move( Tile *tiles[] )
+void Dot::move( Tile *tiles[] , bool isPassable[TOTAL_TILE_SPRITES])
 {
     mBox.x += mVelX;
-    if( ( mBox.x < 0 ) || ( mBox.x + DOT_WIDTH > LEVEL_WIDTH ) || touchesWall( mBox, tiles ) )
+    if( ( mBox.x < 0 ) || ( mBox.x + DOT_WIDTH > LEVEL_WIDTH ) || touchesWall( mBox, tiles, isPassable ) )
     {
         mBox.x -= mVelX;
     }
     mBox.y += mVelY;
-    if( ( mBox.y < 0 ) || ( mBox.y + DOT_HEIGHT > LEVEL_HEIGHT ) || touchesWall( mBox, tiles ) )
+    if( ( mBox.y < 0 ) || ( mBox.y + DOT_HEIGHT > LEVEL_HEIGHT ) || touchesWall( mBox, tiles, isPassable ) )
     {
         mBox.y -= mVelY;
     }
@@ -398,11 +394,11 @@ bool setTiles( Tile* tiles[] , const char* mapFile)
     return tilesLoaded;
 }
 
-bool touchesWall( SDL_Rect box, Tile* tiles[] )
+bool touchesWall( SDL_Rect box, Tile* tiles[], bool isPassable[TOTAL_TILE_SPRITES])
 {
     for( int i = 0; i < TOTAL_TILES; ++i )
     {
-        if( ( tiles[ i ]->getType() >= 3 ) && ( tiles[ i ]->getType() <= 11 ) )
+        if(!isPassable[tiles[ i ]->getType()])
         {
             if( checkCollision( box, tiles[ i ]->getBox() ) )
             {

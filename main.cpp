@@ -33,9 +33,13 @@ int main( int argc, char* args[] )
             SDL_Event e;
             SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
             Dot dot = Dot(camera);
+            dot.moveToCell(std::make_pair(1,1));
 
-            Entity second = Entity("dot.bmp");
+            bool isPassable[TOTAL_TILE_SPRITES] = {false, true, false, false, false, false};
+
+            Entity second = Entity("dot.bmp", camera, isPassable);
             second.setPosition(2, 3);
+            //second.setGoal(9,12);
 
             while(!quit)
             {
@@ -47,12 +51,13 @@ int main( int argc, char* args[] )
                         quit = true;
                     }
                     dot.handleEvent( e );
+                    second.handleEvent(e);
                 }
 
-                dot.move( tileSet );
+                dot.move( tileSet, isPassable);
                 dot.setCamera( camera );
 
-                second.setPosition(2, 3);
+                second.followPath();
 
                 //Clear screen
                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );

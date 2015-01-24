@@ -1,6 +1,6 @@
 #include "entity.h"
 
-Entity::Entity(const char* textureFile)
+Entity::Entity(const char* textureFile, SDL_Rect& camera, bool isPassable[TOTAL_TILE_SPRITES])
 {
     ENTITY_WIDTH = 20;
     ENTITY_HEIGHT = 20;
@@ -12,6 +12,9 @@ Entity::Entity(const char* textureFile)
     mBox.y = TILE_HEIGHT/2-ENTITY_HEIGHT/2;
 	mBox.w = ENTITY_WIDTH;
 	mBox.h = ENTITY_HEIGHT;
+
+	mMap = Map("main.map", isPassable);
+	mCamera = camera;
 
 	loadTexture(textureFile);
 }
@@ -46,21 +49,47 @@ void Entity::followPath()
 {
     if(mPath.size()>0)
     {
-        setPosition(mPath.front());
-        mPath.erase(mPath.front());
+        setPosition(idToCoord(mPath.front()));
+        mPath.erase(mPath.begin());
     }
 }
 
-void Entity::setGoal(std::pair<int, int> pos)
+bool Entity::setGoal(std::pair<int, int> pos)
 {
     mGoal = pos;
-    //insert A* algorithm var into mPath vector table
+    mPath.clear();
+    printf("Start %d | End %d\n", coordToId(mPosX, mPosY), coordToId(mGoal.first,mGoal.second));
+    bool* passable = mMap.getPassable();
+    int* graph = mMap.getGraph();
+    if(&passable[graph[coordToId(mGoal.first,mGoal.second)]])
+    {
+        mPath = pathfinding(coordToId(mPosX, mPosY), coordToId(mGoal.first,mGoal.second), graph, passable);
+        mPath.push_back(coordToId(mGoal.first,mGoal.second));
+        return true;
+    }
+    else{
+        printf("You shall not pass...");
+        return false;
+    }
 }
 
-void Entity::setGoal(int posX, int posY)
+bool Entity::setGoal(int posX, int posY)
 {
     mGoal = std::make_pair(posX, posY);
-    //insert A* algorithm var into mPath vector table
+    mPath.clear();
+    printf("Start %d | End %d\n", coordToId(mPosX, mPosY), coordToId(mGoal.first,mGoal.second));
+    bool* passable = mMap.getPassable();
+    int* graph = mMap.getGraph();
+    if(&passable[graph[coordToId(mGoal.first,mGoal.second)]])
+    {
+        mPath = pathfinding(coordToId(mPosX, mPosY), coordToId(mGoal.first,mGoal.second), graph, passable);
+        mPath.push_back(coordToId(mGoal.first,mGoal.second));
+        return true;
+    }
+    else{
+        printf("You shall not pass...");
+        return false;
+    }
 }
 
 void Entity::render(SDL_Rect& camera)
@@ -77,4 +106,13 @@ bool Entity::loadTexture(const char* textureFile)
 		success = false;
 	}
 	return success;
+}
+
+void Entity::handleEvent(SDL_Event& e)
+{
+    if(e.type == SDL_MOUSEBUTTONDOWN)
+    {
+        std::pair<int,int> coords = getClickedCell(mCamera, e.button.x, e.button.y);
+        setGoal(coords.first, coords.second);
+    }
 }
